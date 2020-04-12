@@ -14,10 +14,19 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "lib-mslogin": [
+        "dist/lib-mslogin"
+      ],
+      "lib-mstabs": [
+        "dist/lib-mstabs"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "enableResourceInlining": true
   }
 }
