@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MS_PORTAL_DATA } from './../../../../shared/tabs/_services/tabs.injector';
+import { MS_PORTAL_DATA } from 'lib-mstabs';
 
 @Component({
   selector: 'app-secured-loan',

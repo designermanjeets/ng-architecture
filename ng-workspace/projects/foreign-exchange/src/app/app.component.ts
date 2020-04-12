@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SecuredLoanComponent } from './features/products/components/secured-loan/secured-loan.component';
-import { Tab } from './../../../lib-mstabs/src/lib/_models/tabs.models';
 import { BehaviorSubject } from 'rxjs';
+import { Tab } from 'lib-mstabs';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +11,13 @@ import { BehaviorSubject } from 'rxjs';
 
 export class AppComponent implements OnInit {
   title = 'foreign-exchange';
+  selectedIndex: number;
   tabsComponents: Tab[] = [];
   addMoreTabsSub: BehaviorSubject<Tab> = new BehaviorSubject(null);
-  removeTabsSub: BehaviorSubject<Tab> = new BehaviorSubject(null);
+  removeTabsSub: BehaviorSubject<number> = new BehaviorSubject(null);
 
-  constructor(
-  ) { }
+  constructor()
+    { }
 
   ngOnInit(): void {
   }
@@ -26,7 +27,11 @@ export class AppComponent implements OnInit {
     this.addMoreTabsSub.next(tab);
   }
 
+  removeSelTabs() {
+    this.removeTabsSub.next(this.selectedIndex);
+  }
+
   tabChangedEvent(event) {
-    // console.log(event);
+    this.selectedIndex = event.index;
   }
 }

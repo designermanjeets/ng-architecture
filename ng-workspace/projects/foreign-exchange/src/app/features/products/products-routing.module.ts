@@ -7,7 +7,7 @@ import { SecuredLoanComponent } from './components/secured-loan/secured-loan.com
 const routes: Routes = [
   {
     path: '',
-    component: SecuredLoanComponent,
+    component: UnsecuredLoanComponent,
   },
   {
     path: 'securedloan',

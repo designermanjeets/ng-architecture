@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Tab } from './../_models/tabs.models';
 import { BehaviorSubject } from 'rxjs';
+import { Tab } from './../_models/tabs.models';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +8,16 @@ import { BehaviorSubject } from 'rxjs';
 
 export class LibMSTabsService {
   tabs: Tab[];
-
   public tabSub = new BehaviorSubject<Tab[]>(this.tabs);
 
+  constructor(
+  ) { }
+
   public removeTab(index: number) {
-    this.tabs[this.tabs.length - 1].active = this.tabs.length > 0;
     this.tabs.splice(index, 1);
+    if (this.tabs.length > 0) {
+      this.tabs[this.tabs.length - 1].active = true;
+    }
     this.tabSub.next(this.tabs);
   }
 
@@ -30,4 +34,5 @@ export class LibMSTabsService {
     this.tabs.push(tab);
     this.tabSub.next(this.tabs);
   }
+
 }

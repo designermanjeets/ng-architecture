@@ -1,29 +1,15 @@
-import { TestComponent } from './comps/test.component';
-import {  Component, OnInit, Input, Output, EventEmitter, Injector, Inject } from '@angular/core';
-import { LibMSTabsService } from './_services/lib-mstabs.service';
-import { Tab } from './_models/tabs.models';
+import { Component, OnInit, Input, Output, EventEmitter, Injector, ViewContainerRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { tabInjector, MS_PORTAL_DATA } from './_services/tabs.injector';
+import { LibMSTabsService } from './_services/lib-mstabs.service';
+import { Tab } from './_models/tabs.models';
+import { tabInjector } from './_services/tabs.injector';
 
 @Component({
-  selector: 'lib-mstabs-parent',
+  selector: 'lib-mstabs-wrapper',
   templateUrl: './lib-mstabs.component.html',
-  styles: [
-    `
-      .container-fluid {
-        width: 100%;
-        padding-right: 15px;
-        padding-left: 15px;
-        margin-right: auto;
-        margin-left: auto;
-      }
-      .mt-2 {
-        margin-top: 2rem;
-      }
-    `
-  ]
 })
+
 export class LibMSTabsComponent implements OnInit {
   selectedTab: number;
   portals: any = {};
@@ -31,42 +17,52 @@ export class LibMSTabsComponent implements OnInit {
   componentRefs: any = {};
   @Input() tabsComponents;
   @Input() addMoreTabsSub: BehaviorSubject<Tab>;
+  @Input() removeTabsSub: BehaviorSubject<number>;
   @Output() tabChangedEvent = new EventEmitter<Tab>();
+  viewContainerRef: ViewContainerRef;
 
   constructor(
     private tabService: LibMSTabsService,
     private injector: Injector,
-    // @Inject(MS_PORTAL_DATA) public mytabs: BehaviorSubject<any>,
-  ) {}
+    private privateviewContainerRef: ViewContainerRef,
+  ) {
+      this.viewContainerRef = this.privateviewContainerRef;
+    }
 
   ngOnInit() {
-    // console.log(this.mytabs);
     this.tabService.setTabs(this.tabsComponents);
-    this.tabService.addTab(
-      new Tab(TestComponent, 'TestComponent 1', { compdata: 'TestComponent' })
-    );
+
+    this.addMoreTabsSub.subscribe((t: Tab) => t && this.addTab(t));
+
+    this.removeTabsSub.subscribe((t: number) => t !== null && this.removeTab(Number(t)));
+
     this.tabService.tabSub.subscribe(tabs => this.selectedTab = tabs && tabs.findIndex(tab => tab.active));
 
-    this.addMoreTabsSub.subscribe(t => {
-      if (t) {
-        this.tabService.addTab(
-          new Tab(t.component, t.title, t.tabData)
-        );
-      }
-    });
+  }
+
+  addTab(t) {
+    this.tabService.addTab(
+      new Tab(t.component, t.title, t.tabData)
+    );
   }
 
   tabChanged(event) {
     this.tabChangedEvent.emit(event);
-    this.portals[event.index] = new ComponentPortal(
+    this.injectToken(event);
+  }
+
+  injectToken(event?) {
+    this.portals = new ComponentPortal(
       this.tabsComponents,
-      null,
-      tabInjector( event, this.injector )
+      this.viewContainerRef,
+      tabInjector( { event, ...this.portals }, this.injector )
     );
+    tabInjector( { event, ...this.portals }, this.injector );
     console.log(this.portals);
   }
 
   removeTab(index: number): void {
     this.tabService.removeTab(index);
   }
+
 }
