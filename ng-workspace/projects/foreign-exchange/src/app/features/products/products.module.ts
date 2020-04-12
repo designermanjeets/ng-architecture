@@ -3,13 +3,17 @@ import { CommonModule } from '@angular/common';
 
 import { ProductsRoutingModule } from './products-routing.module';
 import { SecuredLoanComponent } from './components/secured-loan/secured-loan.component';
+import { UnsecuredLoanComponent } from './components/unsecured-loan/unsecured-loan.component';
 
 
 @NgModule({
-  declarations: [SecuredLoanComponent],
+  declarations: [
+    SecuredLoanComponent,
+    UnsecuredLoanComponent
+  ],
   imports: [
     CommonModule,
-    ProductsRoutingModule
+    ProductsRoutingModule,
   ]
 })
 export class ProductsModule { }
