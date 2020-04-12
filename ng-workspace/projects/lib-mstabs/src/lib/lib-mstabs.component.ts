@@ -1,12 +1,13 @@
-import { Component, OnInit, Input, Output, EventEmitter, Injector, ViewContainerRef  } from '@angular/core';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { BehaviorSubject } from 'rxjs';
-import { Tab } from './_models/tabs.models';
+import { TestComponent } from './comps/test.component';
+import {  Component, OnInit, Input, Output, EventEmitter, Injector, Inject } from '@angular/core';
 import { LibMSTabsService } from './_services/lib-mstabs.service';
-import { tabInjector } from './_services/tabs.injector';
+import { Tab } from './_models/tabs.models';
+import { BehaviorSubject } from 'rxjs';
+import { ComponentPortal } from '@angular/cdk/portal';
+import { tabInjector, MS_PORTAL_DATA } from './_services/tabs.injector';
 
 @Component({
-  selector: 'app-mstabs-parent',
+  selector: 'lib-mstabs-parent',
   templateUrl: './lib-mstabs.component.html',
   styles: [
     `
@@ -23,27 +24,27 @@ import { tabInjector } from './_services/tabs.injector';
     `
   ]
 })
-
 export class LibMSTabsComponent implements OnInit {
   selectedTab: number;
-  public portals: any = {};
+  portals: any = {};
   portalHosts: any = {};
   componentRefs: any = {};
   @Input() tabsComponents;
   @Input() addMoreTabsSub: BehaviorSubject<Tab>;
   @Output() tabChangedEvent = new EventEmitter<Tab>();
-  viewContainerRef: ViewContainerRef;
 
   constructor(
     private tabService: LibMSTabsService,
     private injector: Injector,
-    private privateviewContainerRef: ViewContainerRef
-  ) {
-      this.viewContainerRef = this.privateviewContainerRef;
-  }
+    // @Inject(MS_PORTAL_DATA) public mytabs: BehaviorSubject<any>,
+  ) {}
 
   ngOnInit() {
+    // console.log(this.mytabs);
     this.tabService.setTabs(this.tabsComponents);
+    this.tabService.addTab(
+      new Tab(TestComponent, 'TestComponent 1', { compdata: 'TestComponent' })
+    );
     this.tabService.tabSub.subscribe(tabs => this.selectedTab = tabs && tabs.findIndex(tab => tab.active));
 
     this.addMoreTabsSub.subscribe(t => {
@@ -51,22 +52,18 @@ export class LibMSTabsComponent implements OnInit {
         this.tabService.addTab(
           new Tab(t.component, t.title, t.tabData)
         );
-        this.injeectToken();
       }
     });
   }
 
-  injeectToken() {
-    this.portals = new ComponentPortal(
-      this.tabsComponents,
-      this.viewContainerRef,
-      tabInjector( { event, ...this.portals }, this.injector )
-    );
-    tabInjector( { event, ...this.portals }, this.injector );
-  }
-
   tabChanged(event) {
     this.tabChangedEvent.emit(event);
+    this.portals[event.index] = new ComponentPortal(
+      this.tabsComponents,
+      null,
+      tabInjector( event, this.injector )
+    );
+    console.log(this.portals);
   }
 
   removeTab(index: number): void {
