@@ -44,21 +44,20 @@ export class LibMSTabsComponent implements OnInit {
     this.tabService.addTab(
       new Tab(t.component, t.title, t.tabData)
     );
+    this.injectToken();
   }
 
   tabChanged(event) {
     this.tabChangedEvent.emit(event);
-    this.injectToken(event);
   }
 
-  injectToken(event?) {
+  injectToken() {
     this.portals = new ComponentPortal(
       this.tabsComponents,
       this.viewContainerRef,
-      tabInjector( { event, ...this.portals }, this.injector )
+      tabInjector( this.portals , this.injector )
     );
-    tabInjector( { event, ...this.portals }, this.injector );
-    console.log(this.portals);
+    tabInjector( this.portals, this.injector );
   }
 
   removeTab(index: number): void {

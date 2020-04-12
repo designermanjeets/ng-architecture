@@ -8,8 +8,6 @@ import { ContentContainerDirective } from './_directives/content-container.direc
 import { TabContentComponent } from './tab-content.component';
 import { TestComponent } from './comps/test.component';
 
-
-
 @NgModule({
   declarations: [
     LibMSTabsComponent,
