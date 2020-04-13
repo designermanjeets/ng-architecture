@@ -11,7 +11,7 @@ export class UnsecuredLoanComponent implements OnInit {
 
   constructor(
     @Inject(MS_PORTAL_DATA) public data: any ) {
-      console.log(data._customTokens && data._customTokens.get(MS_PORTAL_DATA));
+      console.log(data);
   }
 
   ngOnInit(): void {

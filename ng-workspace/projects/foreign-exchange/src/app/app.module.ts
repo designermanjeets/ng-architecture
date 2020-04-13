@@ -29,7 +29,7 @@ import { LibMstabsModule, MS_PORTAL_DATA, tabInjector } from 'lib-mstabs';
     ReactiveFormsModule,
     LibMstabsModule
   ],
-  providers: [{ provide: MS_PORTAL_DATA, useFactory: tabInjector }],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

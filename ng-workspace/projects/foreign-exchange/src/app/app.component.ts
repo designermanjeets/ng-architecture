@@ -1,7 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Tab } from 'lib-mstabs';
-import { MS_PORTAL_DATA } from 'lib-mstabs';
 import { SecuredLoanComponent } from './features/products/components/secured-loan/secured-loan.component';
 import { UnsecuredLoanComponent } from './features/products/components/unsecured-loan/unsecured-loan.component';
 
@@ -18,9 +17,7 @@ export class AppComponent implements OnInit {
   addMoreTabsSub: BehaviorSubject<Tab> = new BehaviorSubject(null);
   removeTabsSub: BehaviorSubject<number> = new BehaviorSubject(null);
 
-  constructor(
-    @Inject(MS_PORTAL_DATA) public data: any ) {
-      console.log(data);
+  constructor() {
   }
 
   ngOnInit(): void {

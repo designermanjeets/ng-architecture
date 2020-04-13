@@ -8,8 +8,9 @@
           </i>
         </ng-template>
   
-        <div>
-          <lib-tab-content [tab]="tab"></lib-tab-content>
+        <div id="mstab-{{tabID}}">
+          <!-- Below Code will inject in provided Directive with component factory -->
+          <!-- <lib-tab-content [tab]="tab"></lib-tab-content> -->
         </div>
       </mat-tab>
     </mat-tab-group>
