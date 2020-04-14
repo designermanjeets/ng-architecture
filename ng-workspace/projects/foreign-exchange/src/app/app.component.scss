@@ -1,2 +1,12 @@
-.example-tabwrapper { padding: 25px; display: block; min-height: 200px; }
-.example-btn { margin: 25px; margin-right: 0; }
+.padd25 { padding: 25px; }
+.example-tabwrapper { display: block; min-height: 200px; }
+.example-btn { margin: 25px; margin-right: 10px; margin-left: 0; }
+
+.navbar { 
+    list-style: none; display: flex;
+        > li { margin-left:25px;
+            a { color: #fff; text-decoration: none; margin-top: 3px; display: block;
+                &:hover { color: #ddd; }
+            }
+        }
+    }

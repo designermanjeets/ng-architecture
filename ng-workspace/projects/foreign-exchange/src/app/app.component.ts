@@ -1,8 +1,9 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Tab } from 'lib-mstabs';
 import { SecuredLoanComponent } from './features/products/components/secured-loan/secured-loan.component';
 import { UnsecuredLoanComponent } from './features/products/components/unsecured-loan/unsecured-loan.component';
+import {ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -10,17 +11,24 @@ import { UnsecuredLoanComponent } from './features/products/components/unsecured
   styleUrls: ['./app.component.scss']
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   title = 'foreign-exchange';
   selectedIndex: number;
   tabsComponents: Tab[] = [];
   addMoreTabsSub: BehaviorSubject<Tab> = new BehaviorSubject(null);
   removeTabsSub: BehaviorSubject<number> = new BehaviorSubject(null);
 
-  constructor() {
+  constructor(
+    private cdref: ChangeDetectorRef
+  ) {
   }
 
   ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+    this.addTabs(1); // Default
+    this.cdref.detectChanges();
   }
 
   addTabs(num) {

@@ -15,11 +15,7 @@ export class LibMSTabsService {
   ) { }
 
   public removeTab(id: number) {
-    this.tabs.forEach((ele, i) => {
-      if (this.tabs[i].id === id) {
-        this.tabs.splice(i, 1);
-      }
-    });
+    this.tabs.filter((element, i) => element.id === id && this.tabs.splice(i, 1));
     if (this.tabs.length > 0) {
       this.tabs[this.tabs.length - 1].active = true;
     }

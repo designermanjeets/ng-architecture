@@ -90,9 +90,13 @@ export class LibMSTabsComponent implements OnInit {
   }
 
   removeTab(index: number): void {
-    const tID = this.tabsComponents[index].id;
-    delete this.portals[tID];
-    this.tabService.removeTab(tID);
+    if (this.tabsComponents.length > 1) {
+        const tID = this.tabsComponents[index].id;
+        delete this.portals[tID];
+        this.tabService.removeTab(tID);
+    } else {
+        console.error('Atleast One Tab Should Be There!');
+    }
   }
 
 }
