@@ -1,7 +1,7 @@
 import { TabContentComponent } from './tab-content.component';
 import {  Component, OnInit, Input, Output, EventEmitter, Injector,
           ViewContainerRef, ContentChildren, QueryList, Inject,
-          ComponentFactoryResolver, ApplicationRef
+          ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef
 } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { ComponentPortal, DomPortalHost } from '@angular/cdk/portal';
@@ -20,7 +20,6 @@ export class LibMSTabsComponent implements OnInit {
   portals: any = {};
   portalHosts: any = {};
   componentRefs: any = {};
-  tabID: any;
   @Input() tabsComponents;
   @Input() addMoreTabsSub: BehaviorSubject<Tab>;
   @Input() removeTabsSub: BehaviorSubject<number>;
@@ -35,7 +34,8 @@ export class LibMSTabsComponent implements OnInit {
     private tabService: LibMSTabsService,
     private injector: Injector,
     private privateviewContainerRef: ViewContainerRef,
-    @Inject(DOCUMENT) private document: Document
+    private cdref: ChangeDetectorRef,
+    @Inject(DOCUMENT) private document: Document,
   ) {
       this.viewContainerRef = this.privateviewContainerRef;
     }
@@ -47,7 +47,14 @@ export class LibMSTabsComponent implements OnInit {
 
     this.removeTabsSub.subscribe((t: number) => t !== null && this.removeTab(Number(t)));
 
-    this.tabService.tabSub.subscribe(tabs => this.selectedTab = tabs && tabs.findIndex(tab => tab.active));
+    this.tabService.tabSub.subscribe(tabs => {
+      if (tabs) {
+        this.selectedTab = tabs.findIndex(tab => tab.active);
+        const row = tabs[this.selectedTab];
+        this.cdref.detectChanges();
+        this.injectToken(row.id, row);
+      }
+    });
 
   }
 
@@ -55,14 +62,10 @@ export class LibMSTabsComponent implements OnInit {
     this.tabService.addTab(
       new Tab(t.component, t.title, t.tabData)
     );
-    this.tabID = this.tabService.getTabID;
   }
 
   tabChanged(event) {
-    const tID = this.tabsComponents[event.index].id;
-    const row = this.tabsComponents[event.index];
     this.tabChangedEvent.emit(event);
-    this.injectToken(tID, row);
   }
 
   injectToken(tID, row) {

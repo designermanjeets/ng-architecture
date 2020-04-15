@@ -9,7 +9,7 @@ import { UnsecuredLoanComponent } from './components/unsecured-loan/unsecured-lo
 @NgModule({
   declarations: [
     SecuredLoanComponent,
-    UnsecuredLoanComponent
+    UnsecuredLoanComponent,
   ],
   imports: [
     CommonModule,

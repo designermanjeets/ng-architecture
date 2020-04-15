@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { Tab } from './../_models/tabs.models';
 
 @Injectable({
@@ -30,7 +31,7 @@ export class LibMSTabsService {
         this.tabs[i].active = false;
       }
     });
-    tab.id = Date.now();
+    tab.id = uuidv4();
     tab.active = true;
     this.tabs.push(tab);
     this.tabSub.next(this.tabs);
