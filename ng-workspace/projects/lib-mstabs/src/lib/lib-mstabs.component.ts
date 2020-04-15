@@ -13,6 +13,10 @@ import { DOCUMENT } from '@angular/common';
 @Component({
   selector: 'lib-mstabs-wrapper',
   templateUrl: './lib-mstabs.component.html',
+  styles: [
+    ` .exampleh1 { margin-top: 0 }
+    `
+  ]
 })
 
 export class LibMSTabsComponent implements OnInit {
@@ -23,6 +27,7 @@ export class LibMSTabsComponent implements OnInit {
   @Input() tabsComponents;
   @Input() addMoreTabsSub: BehaviorSubject<Tab>;
   @Input() removeTabsSub: BehaviorSubject<number>;
+  @Output() tabRemoveEvent = new EventEmitter<any>();
   @Output() tabChangedEvent = new EventEmitter<any>();
   viewContainerRef: ViewContainerRef;
 
@@ -97,6 +102,7 @@ export class LibMSTabsComponent implements OnInit {
         const tID = this.tabsComponents[index].id;
         delete this.portals[tID];
         this.tabService.removeTab(tID);
+        this.tabRemoveEvent.emit(this.tabsComponents);
     } else {
         console.error('Atleast One Tab Should Be There!');
     }

@@ -37,35 +37,53 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (sessionStorage.getItem('state') && sessionStorage.getItem('state')){
-      const ts = JSON.parse(sessionStorage.getItem('state'));
+    const cachedState = sessionStorage.getItem('state');
+    if (cachedState && JSON.parse(cachedState).tabs){
+      const ts = JSON.parse(cachedState).tabs;
       let ind = 0;
-      ts.tabs.payloadTabs.forEach(e => {
+      ts.payloadTabs.forEach(e => {
         this.addTabs(e.tabData.option);
         this.cdref.detectChanges();
         ind++;
-        ts.tabs.payloadTabs.length === ind ? this.ngxService.stop() : this.ngxService.start();
+        ts.payloadTabs.length === ind ? this.ngxService.stop() : this.ngxService.start();
       });
-    }  }
+    } else {
+      this.addTabs(Number(1)); // Set Any Default Value/Component' Value if No Tabs
+    }
+  }
+
+  selectionChange($event) {
+    this.addTabs(Number($event.value));
+  }
 
   addTabs(num) {
     let tab = null;
     if (num === 1) {
-      tab = new Tab(SecuredLoanComponent, 'SecuredLoanComponent 1', { option: num });
+      tab = new Tab(SecuredLoanComponent, 'Secured Loan', { option: num });
     } else
     if (num === 2) {
-      tab = new Tab(UnsecuredLoanComponent, 'UnsecuredLoanComponent 2', { option: num });
+      tab = new Tab(UnsecuredLoanComponent, 'Unsecured Loan', { option: num });
     }
     this.addMoreTabsSub.next(tab);
-    this.ngRedux.dispatch({ type: GET_ALL_TABS, payloadTabs: [...this.tabsComponents] });
-    sessionStorage.setItem('state', JSON.stringify(this.ngRedux.getState()));
+    this.updateState();
   }
 
-  removeSelTabs() {
+  removeSelTabs() { // Reomove from Outside
     this.removeTabsSub.next(this.selectedIndex);
+    this.updateState();
+  }
+
+  tabRemoveEvent(event) { // Reomove from inside
+    this.updateState();
   }
 
   tabChangedEvent(event) {
     this.selectedIndex = event.index;
+  }
+
+  updateState() {
+    this.cdref.detectChanges();
+    this.ngRedux.dispatch({ type: GET_ALL_TABS, payloadTabs: [...this.tabsComponents] });
+    sessionStorage.setItem('state', JSON.stringify(this.ngRedux.getState()));
   }
 }

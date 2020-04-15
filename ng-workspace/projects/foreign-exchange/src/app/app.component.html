@@ -22,6 +22,15 @@
   <!-- Router Outlet -->
   <router-outlet></router-outlet>
   <!-- ./Router Outlet -->
+  <section fxLayout="row wrap" fxLayoutAlign="end start">
+    <mat-form-field fxFlex="250px">
+      <mat-label>Add Dynamic Component</mat-label>
+      <mat-select (selectionChange)="selectionChange($event)">
+        <mat-option value="1">SecuredLoanComponent</mat-option>
+        <mat-option value="2">UnsecuredLoanComponent</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </section>
 
   <!-- Tabs Library -->
   <lib-mstabs-wrapper
@@ -29,12 +38,10 @@
     [tabsComponents] = tabsComponents
     [addMoreTabsSub] = addMoreTabsSub
     [removeTabsSub] = removeTabsSub
+    (tabRemoveEvent) = "tabRemoveEvent($event)"
     (tabChangedEvent) = "tabChangedEvent($event)"
   ></lib-mstabs-wrapper>
   <!-- ./Tabs Library -->
-
-  <button class="example-btn" (click)="addTabs(1)" mat-raised-button color="primary">Add Tab 1</button>
-  <button class="example-btn" (click)="addTabs(2)" mat-raised-button color="primary">Add Tab 2</button>
   <button class="example-btn" (click)="removeSelTabs()" mat-raised-button color="warn">Remove Selected Tab</button>
 </section>
 <svg id="clouds" alt="Gray Clouds Background" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">

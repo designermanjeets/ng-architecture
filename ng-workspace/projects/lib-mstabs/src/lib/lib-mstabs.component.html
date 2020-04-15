@@ -1,5 +1,5 @@
 <div class="container-fluid">
-    <h1>Dynamic Tabs</h1>  
+    <h1 class="exampleh1">Dynamic Tabs</h1>  
     <mat-tab-group #tabGroup animationDuration="0" class="main-tab-group mt-2" [selectedIndex]="selectedTab" (selectedTabChange)="tabChanged($event)">
       <mat-tab *ngFor="let tab of tabsComponents; let tabIndex = index">
         <ng-template mat-tab-label>{{ tab.title }}
