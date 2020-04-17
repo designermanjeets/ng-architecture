@@ -1,11 +1,11 @@
-
 import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Tab } from 'lib-mstabs';
 import { SecuredLoanComponent } from './features/products/components/secured-loan/secured-loan.component';
 import { UnsecuredLoanComponent } from './features/products/components/unsecured-loan/unsecured-loan.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader'; // Import NgxUiLoaderService
+import { Router } from '@angular/router';
 
 // Store
 import { NgRedux, select } from '@angular-redux/store';
@@ -29,11 +29,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   constructor(
     private cdref: ChangeDetectorRef,
     private ngRedux: NgRedux<IAppState>,
-    private ngxService: NgxUiLoaderService
+    private ngxService: NgxUiLoaderService,
+    private router: Router
   ) {
   }
 
   ngOnInit(): void {
+    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+    if (!currentUser) {
+        this.router.navigate(['/login'] );
+    }
   }
 
   ngAfterViewInit(): void {

@@ -1,0 +1,30 @@
+<mat-card>
+    <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="row wrap" fxLayoutAlign="start start">
+        <h2 fxFlex="100" class="example-heading">Login</h2>
+        <section fxFlex="100">
+            <mat-form-field fxFlex="100">
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="Name" value="Sushi" formControlName="name">
+                <mat-error *ngIf="submitted && f.name.errors">
+                    <div *ngIf="f.name.errors.required">name is required</div>
+                </mat-error>
+            </mat-form-field>
+        </section>
+        <section fxFlex="100">
+            <mat-form-field fxFlex>
+                <mat-label>Password</mat-label>
+                <input matInput placeholder="Password" type="password" formControlName="password">
+                <mat-error *ngIf="submitted && f.password.errors">
+                    <div *ngIf="f.password.errors.required">Password is required</div>
+                </mat-error>
+            </mat-form-field>
+        </section>
+        <section fxFlex="100" fxLayoutAlign="end start">
+            <mat-error *ngIf="error" [style.margin-right]="'auto'">{{error}}</mat-error>
+            <button type="button" mat-raised-button color="primary" (click)="checkToken()">Test Token</button>
+            &nbsp;&nbsp;
+            <button mat-raised-button color="primary">Login</button>
+        </section>
+    </form>
+</mat-card>

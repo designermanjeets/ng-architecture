@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from './../../../../../lib-mslogin/src/lib/auth/_services/auth.guard';
+import { LoginShellComponent } from '../../features/login/loginshell.component';
+import { DashboardComponent } from '../../shared/components/dashboard.component';
 
 const routes: Routes = [
   {
@@ -14,6 +17,15 @@ const routes: Routes = [
   {
     path: 'or',
     loadChildren: () => import('./../../features/instruments/instruments.module').then(m => m.InstrumentsModule),
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'login',
+    component: LoginShellComponent
   }
 ];
 

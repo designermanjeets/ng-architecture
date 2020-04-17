@@ -1,9 +1,9 @@
 import { TabContentComponent } from './tab-content.component';
 import {  Component, OnInit, Input, Output, EventEmitter, Injector,
           ViewContainerRef, ContentChildren, QueryList, Inject,
-          ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef
+          ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef, OnDestroy
 } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ComponentPortal, DomPortalHost } from '@angular/cdk/portal';
 import { LibMSTabsService } from './_services/lib-mstabs.service';
 import { Tab } from './_models/tabs.models';
@@ -19,11 +19,12 @@ import { DOCUMENT } from '@angular/common';
   ]
 })
 
-export class LibMSTabsComponent implements OnInit {
+export class LibMSTabsComponent implements OnInit, OnDestroy {
   selectedTab: number;
   portals: any = {};
   portalHosts: any = {};
   componentRefs: any = {};
+  subs: Subscription;
   @Input() tabsComponents;
   @Input() addMoreTabsSub: BehaviorSubject<Tab>;
   @Input() removeTabsSub: BehaviorSubject<number>;
@@ -48,11 +49,11 @@ export class LibMSTabsComponent implements OnInit {
   ngOnInit() {
     this.tabService.setTabs(this.tabsComponents);
 
-    this.addMoreTabsSub.subscribe((t: Tab) => t && this.addTab(t));
+    this.subs = this.addMoreTabsSub.subscribe((t: Tab) => t && this.addTab(t));
 
-    this.removeTabsSub.subscribe((t: number) => t !== null && this.removeTab(Number(t)));
+    this.subs = this.removeTabsSub.subscribe((t: number) => t !== null && this.removeTab(Number(t)));
 
-    this.tabService.tabSub.subscribe(tabs => {
+    this.subs = this.tabService.tabSub.subscribe(tabs => {
       if (tabs) {
         this.selectedTab = tabs.findIndex(tab => tab.active);
         const row = tabs[this.selectedTab];
@@ -106,6 +107,10 @@ export class LibMSTabsComponent implements OnInit {
     } else {
         console.error('Atleast One Tab Should Be There!');
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.subs) { this.subs.unsubscribe(); }
   }
 
 }

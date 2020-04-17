@@ -11,6 +11,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 
 // Components
 import { AppComponent } from './app.component';
+import { LoginShellComponent } from './features/login/loginshell.component';
 
 // Libs || Ignore the Linting Errors || Verify path in tsconfig.json
 import { LibMsloginModule } from 'lib-mslogin';
@@ -19,6 +20,7 @@ import { LibMstabsModule } from 'lib-mstabs';
 import { IAppState, rootReducer, INITIAL_STATE } from './core/store/store';
 import { NgReduxModule, NgRedux, DevToolsExtension } from '@angular-redux/store';
 import { NgxUiLoaderModule, NgxUiLoaderConfig } from 'ngx-ui-loader';
+import { DashboardComponent } from './shared/components/dashboard.component';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: '#5957d6',
@@ -54,6 +56,8 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
 @NgModule({
   declarations: [
     AppComponent,
+    DashboardComponent,
+    LoginShellComponent
   ],
   imports: [
     BrowserModule,

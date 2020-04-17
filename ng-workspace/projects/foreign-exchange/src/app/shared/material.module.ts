@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 const modules = [
@@ -12,6 +13,7 @@ const modules = [
     MatTabsModule,
     MatIconModule,
     MatSelectModule,
+    MatProgressBarModule
 ];
 
 @NgModule({
