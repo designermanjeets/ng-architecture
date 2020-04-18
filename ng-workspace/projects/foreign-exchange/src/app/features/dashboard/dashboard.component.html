@@ -1,0 +1,22 @@
+<section fxLayout="row wrap" fxLayoutAlign="end start">
+    <mat-form-field fxFlex="250px">
+        <mat-label>Add Dynamic Component</mat-label>
+        <mat-select (selectionChange)="selectionChange($event)">
+        <mat-option value="1">SecuredLoanComponent</mat-option>
+        <mat-option value="2">UnsecuredLoanComponent</mat-option>
+        </mat-select>
+    </mat-form-field>
+</section>
+
+<!-- Tabs Library -->
+<lib-mstabs-wrapper
+    class="example-tabwrapper"
+    [tabsComponents] = tabsComponents
+    [addMoreTabsSub] = addMoreTabsSub
+    [removeTabsSub] = removeTabsSub
+    (tabRemoveEvent) = "tabRemoveEvent($event)"
+    (tabChangedEvent) = "tabChangedEvent($event)"
+></lib-mstabs-wrapper>
+<!-- ./Tabs Library -->
+
+<button class="example-btn" (click)="removeSelTabs()" mat-raised-button color="warn">Remove Selected Tab</button>
