@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Tab } from 'lib-mstabs';
 import { ChangeDetectorRef } from '@angular/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader'; // Import NgxUiLoaderService
-import { Router } from '@angular/router';
 
 // Store
 import { NgRedux, select } from '@angular-redux/store';
@@ -12,6 +11,7 @@ import { GET_ALL_TABS } from './../../core/store/actions';
 
 import { UnsecuredLoanComponent } from './../products/components/unsecured-loan/unsecured-loan.component';
 import { SecuredLoanComponent } from './../products/components/secured-loan/secured-loan.component';
+import { AuthenticationService } from 'lib-mslogin';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,15 +29,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private cdref: ChangeDetectorRef,
     private ngRedux: NgRedux<IAppState>,
     private ngxService: NgxUiLoaderService,
-    private router: Router
+    private authenticationService: AuthenticationService
   ) {
   }
 
   ngOnInit(): void {
-    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
-    if (!currentUser) {
-        this.router.navigate(['/login'] );
-    }
+    this.authenticationService.currentUser.subscribe(user => !user && sessionStorage.removeItem('state'));
   }
 
   ngAfterViewInit(): void {
