@@ -1,11 +1,11 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 import { AuthenticationService } from './auth/_services/auth.service';
 import { UserService } from './auth/_services/user.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'lib-mslogin',
@@ -29,9 +29,8 @@ export class LibMsloginComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private authenticationService: AuthenticationService,
-    private cdref: ChangeDetectorRef,
     private userService: UserService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -39,8 +38,6 @@ export class LibMsloginComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       password: ['', Validators.required]
     });
-
-    // this.registerUser();
 
     this.route.queryParams.subscribe(params => {
       if (params) {
@@ -50,16 +47,16 @@ export class LibMsloginComponent implements OnInit, OnDestroy {
   }
 
   // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
+  get f() {
+    return this.loginForm.controls;
+  }
 
   onSubmit() {
     this.submitted = true;
-
     // stop here if form is invalid
     if (this.loginForm.invalid) {
       return;
     }
-
     this.loading = true;
     this.sub = this.authenticationService.login(this.f.name.value, this.f.password.value)
       .pipe(first())
