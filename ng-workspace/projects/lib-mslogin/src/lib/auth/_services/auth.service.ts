@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -14,7 +15,10 @@ export class AuthenticationService {
     private readonly JWT_TOKEN = 'JWT_TOKEN';
     private readonly REFRESH_TOKEN = 'REFRESH_TOKEN';
 
-    constructor(private http: HttpClient) {
+    constructor(
+      private http: HttpClient,
+      private router: Router
+    ) {
         this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(sessionStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
@@ -47,8 +51,11 @@ export class AuthenticationService {
 
     logout() {
         // remove user from local storage to log user out
-        sessionStorage.removeItem('currentUser');
         this.currentUserSubject.next(null);
+        ['currentUser', this.JWT_TOKEN, this.REFRESH_TOKEN].forEach(ele => {
+          sessionStorage.getItem(ele) && sessionStorage.removeItem(ele);
+        });
+        this.router.navigate(['/login'] );
     }
 
     refreshToken() {

@@ -4,11 +4,14 @@
     <span class="spacer"></span>
     <ul class="navbar">
       <li><a routerLink="dashboard" routerLinkActive="active">Dashboard</a></li>
-      <li><a routerLink="login" routerLinkActive="active">Login</a></li>
+      <!-- <li><a routerLink="login" routerLinkActive="active">Login</a></li> -->
       <li><a routerLink="pr/unsecuredloan" routerLinkActive="active">Link 3</a></li>
       <li><a routerLink="pr/unsecuredloan" routerLinkActive="active">Link 4</a></li>
-      <li>
-        <button mat-raised-button color="accent">Login</button>
+      <li *ngIf="currentUser">
+        <button (click)="logout()" mat-raised-button color="accent">Logout</button>
+      </li>
+      <li *ngIf="!currentUser">
+        <button routerLink="login" mat-raised-button color="accent">Login</button>
       </li>
     </ul>
     
