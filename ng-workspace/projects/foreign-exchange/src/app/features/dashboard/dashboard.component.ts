@@ -1,5 +1,6 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { Tab } from 'lib-mstabs';
 import { ChangeDetectorRef } from '@angular/core';
 import { NgxUiLoaderService } from 'ngx-ui-loader'; // Import NgxUiLoaderService
@@ -8,6 +9,8 @@ import { NgxUiLoaderService } from 'ngx-ui-loader'; // Import NgxUiLoaderService
 import { NgRedux, select } from '@angular-redux/store';
 import { IAppState } from './../../core/store/store';
 import { GET_ALL_TABS } from './../../core/store/actions';
+
+import { Post, AllPostsGQL, GetRatesGQL, ExchangeRate } from './../../graph-queries/graphql';
 
 import { UnsecuredLoanComponent } from './../products/components/unsecured-loan/unsecured-loan.component';
 import { SecuredLoanComponent } from './../products/components/secured-loan/secured-loan.component';
@@ -19,22 +22,29 @@ import { AuthenticationService } from 'lib-mslogin';
   styleUrls: ['./dashboard.component.scss']
 })
 
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedIndex: number;
     tabsComponents: Tab[] = [];
     addMoreTabsSub: BehaviorSubject<Tab> = new BehaviorSubject(null);
     removeTabsSub: BehaviorSubject<number> = new BehaviorSubject(null);
+    currentUser: any;
+    private querySubscription: Subscription;
+    posts: Observable<Post[]>; rates: ExchangeRate[]; // GraphQL Queries || Types
 
   constructor(
     private cdref: ChangeDetectorRef,
     private ngRedux: NgRedux<IAppState>,
     private ngxService: NgxUiLoaderService,
-    private authenticationService: AuthenticationService
+    private authenticationService: AuthenticationService,
+    private allPostsGQL: AllPostsGQL,
+    private getRatesGQL: GetRatesGQL
   ) {
   }
 
   ngOnInit(): void {
     this.authenticationService.currentUser.subscribe(user => !user && sessionStorage.removeItem('state'));
+    this.getRates();
+    this.getPosts();
   }
 
   ngAfterViewInit(): void {
@@ -51,6 +61,24 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     } else {
       this.addTabs(Number(1)); // Set Any Default Value/Component' Value if No Tabs
     }
+  }
+
+  ngOnDestroy() {
+    this.querySubscription.unsubscribe();
+  }
+
+  getRates(){
+    this.querySubscription = this.getRatesGQL.watch()
+      .valueChanges
+      .subscribe(({ data, loading }) => console.log(data));
+  }
+
+  getPosts() {
+    this.posts = this.allPostsGQL.watch()
+      .valueChanges
+      .pipe(map(result => result.data.posts));
+
+    this.posts.subscribe(val => console.log(val));
   }
 
   selectionChange($event) {

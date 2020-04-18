@@ -9,6 +9,9 @@ import { AppRoutingModule } from './core/routing/app-routing.module';
 import { MsMaterialModule } from './shared/material.module';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+import { GraphQLModule } from './graphql.module';
+import { HttpClientModule } from '@angular/common/http';
+
 // Components
 import { AppComponent } from './app.component';
 import { LoginShellComponent } from './shared/login/loginshell.component';
@@ -70,6 +73,8 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     LibMstabsModule,
     NgReduxModule,
     FlexLayoutModule,
+    GraphQLModule,
+    HttpClientModule,
     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
   ],
   providers: [],
