@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import {Component, OnInit, Inject, Optional} from '@angular/core';
 import { MS_PORTAL_DATA } from 'lib-mstabs';
 
 @Component({
@@ -10,7 +10,7 @@ import { MS_PORTAL_DATA } from 'lib-mstabs';
 export class SecuredLoanComponent implements OnInit {
 
   constructor(
-    @Inject(MS_PORTAL_DATA) public data: any ) {
+    @Optional() @Inject(MS_PORTAL_DATA) public data: any ) {
       console.log(data);
   }
 

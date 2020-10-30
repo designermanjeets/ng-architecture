@@ -105,7 +105,7 @@ router.post('/token', (req, res) => {
         }
         // update the token in the list
         tokenList[postData.refreshToken].token = token
-        res.status(200).json(resp);        
+        res.status(200).json(resp);
     } else {
         res.status(404).send('Invalid request')
     }
