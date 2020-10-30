@@ -26,6 +26,7 @@
     "@angular/router": "~9.1.1",
     "@angular/service-worker": "~9.1.1",
     "@graphql-codegen/cli": "^1.13.2",
+    "angular-split": "^4.0.0",
     "apollo-angular": "^1.9.1",
     "apollo-angular-link-http": "^1.10.0",
     "apollo-cache-inmemory": "^1.6.0",
