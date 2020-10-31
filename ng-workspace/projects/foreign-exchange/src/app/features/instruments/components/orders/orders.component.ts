@@ -36,7 +36,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   addTabs(num) {
     let tab = null;
     if (num === 1) {
-      tab = new Tab(GraphsChartsComponent, 'Default Tab', { option: num });
+      tab = new Tab(GraphsChartsComponent, 'Default Tab', { data: null });
     }
     this.addMoreTabsSub.next(tab);
   }
