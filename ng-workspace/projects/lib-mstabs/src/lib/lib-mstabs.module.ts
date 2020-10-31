@@ -7,6 +7,8 @@ import { LibMSTabsComponent } from './lib-mstabs.component';
 import { ContentContainerDirective } from './_directives/content-container.directive';
 import { TabContentComponent } from './tab-content.component';
 import { TestComponent } from './comps/test.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { TestComponent } from './comps/test.component';
     CommonModule,
     MatTabsModule,
     MatButtonModule,
-    PortalModule
+    PortalModule,
+    DragDropModule,
+    A11yModule
   ],
   exports: [
     LibMSTabsComponent,

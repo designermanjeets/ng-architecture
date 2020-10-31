@@ -1,8 +1,18 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChange,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { MstreeService } from './_services/mstree.service';
+import { MstreeService } from '../_services/mstree.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 /**
@@ -44,41 +54,10 @@ const TREE_DATA = [
 @Component({
   selector: 'lib-mstree',
   templateUrl: './mstree.component.html',
-  styles: [
-    `
-      .mat-tree { background: transparent }
-
-      /**
-       * TREE DRAG AND DROP STYLING
-       */
-
-      .mat-tree-node {
-        background-color: rgb(66, 157, 253);
-        color: white;
-        user-select: none;
-        cursor: move;
-
-      &.cdk-drag-preview { // while dragging
-       @include mat-elevation(12);
-       }
-      &.cdk-drag-placeholder { // potential drop area
-       opacity: 0;
-       }
-      }
-
-      /* items moving away to make room for drop */
-      .cdk-drop-list-dragging .mat-tree-node:not(.cdk-drag-placeholder) {
-        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-      }
-      /* item being dropped */
-      .cdk-drag-animating {
-        transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
-      }
-    `
-  ],
+  styleUrls: [ './mstree.component.scss' ],
   providers: [MstreeService]
 })
-export class LibMstreeComponent {
+export class LibMstreeComponent implements OnChanges {
   /** Map from flat node to nested node. This helps us finding the nested node to be modified */
   flatNodeMap = new Map<TreeItemFlatNode, TreeItemNode>();
 
@@ -105,7 +84,19 @@ export class LibMstreeComponent {
   expandTimeout: any;
   expandDelay = 1000;
 
-  constructor(private database: MstreeService) {
+  @Input() connectWithDynamicComp: any;
+
+  @Output() treeDropEvent = new EventEmitter<any>();
+  @Output() treeFilterChangeEvent = new EventEmitter<any>();
+  @Output() treeDragStartEvent = new EventEmitter<any>();
+  @Output() treeDragEndEvent = new EventEmitter<any>();
+  @Output() treeDragHoverEvent = new EventEmitter<any>();
+  @Output() treeDragHoverEndEvent = new EventEmitter<any>();
+  @Output() treeReBuildEvent = new EventEmitter<any>();
+
+  constructor(
+    private database: MstreeService
+  ) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
       this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
@@ -115,6 +106,12 @@ export class LibMstreeComponent {
       this.dataSource.data = [];
       this.dataSource.data = data;
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.connectWithDynamicComp) {
+      this.connectWithDynamicComp = changes.connectWithDynamicComp.currentValue[0];
+    }
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;
@@ -175,6 +172,7 @@ export class LibMstreeComponent {
     } else {
       this.treeControl.collapseAll();
     }
+    this.treeFilterChangeEvent.emit(filterText);
   }
 
 
@@ -198,15 +196,15 @@ export class LibMstreeComponent {
     return result;
   }
 
-  /**
+  /*
    * Handle the drop - here we rearrange the data based on the drop event,
    * then rebuild the tree.
-   * */
+   */
   drop(event: CdkDragDrop<string[]>) {
     // console.log('origin/destination', event.previousIndex, event.currentIndex);
 
     // ignore drops outside of the tree
-    if (!event.isPointerOverContainer) { return; }
+    // if (!event.isPointerOverContainer) { return; } // Allow Outside from here
 
     // construct a list of visible nodes, this will match the DOM.
     // the cdkDragDrop event.currentIndex jives with visible nodes.
@@ -218,7 +216,8 @@ export class LibMstreeComponent {
 
     // recursive find function to find siblings of node
     function findNodeSiblings(arr: Array<any>, id: string): Array<any> {
-      let result, subResult;
+      let result;
+      let subResult;
       arr.forEach(item => {
         if (item.id === id) {
           result = arr;
@@ -255,6 +254,11 @@ export class LibMstreeComponent {
 
     // rebuild tree with mutated data
     this.rebuildTreeForData(changedData);
+    this.treeDropEvent.emit({
+      drop: true,
+      event,
+      changedData
+    });
   }
 
   /**
@@ -262,21 +266,25 @@ export class LibMstreeComponent {
    */
   dragStart() {
     this.dragging = true;
+    this.treeDragStartEvent.emit({dragging: true});
   }
   dragEnd() {
     this.dragging = false;
+    this.treeDragEndEvent.emit({dragging: false});
   }
   dragHover(node: TreeItemFlatNode) {
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
       this.expandTimeout = setTimeout(() => {
         this.treeControl.expand(node);
+        this.treeDragHoverEvent.emit({event: 'dragHover' , value: node});
       }, this.expandDelay);
     }
   }
   dragHoverEnd() {
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
+      this.treeDragHoverEndEvent.emit({event: 'dragHover', value: false});
     }
   }
 
@@ -291,6 +299,7 @@ export class LibMstreeComponent {
     this.dataSource.data = data;
     this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
     this.expandNodesById(this.treeControl.dataNodes, Array.from(this.expandedNodeSet));
+    this.treeReBuildEvent.emit({event: 'rebuild', data});
   }
 
   private rememberExpandedTreeNodes(

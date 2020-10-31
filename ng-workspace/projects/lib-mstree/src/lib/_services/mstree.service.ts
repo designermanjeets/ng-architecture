@@ -79,13 +79,10 @@ export class MstreeService {
          */
         node.id = `${parentId}/${idx}`;
 
-        console.log(node.id)
-
         const children = obj.filter(so => (so.code as string).startsWith(level + '.'));
         if (children && children.length > 0) {
           node.children = this.buildFileTree(children, o.code, node.id);
         }
-        console.log(node)
         return node;
       });
   }

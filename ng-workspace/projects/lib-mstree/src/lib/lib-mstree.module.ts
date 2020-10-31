@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LibMstreeComponent } from './lib-mstree.component';
+import { LibMstreeComponent } from './component/lib-mstree.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CdkTreeModule } from '@angular/cdk/tree';
 import { MatTreeModule } from '@angular/material/tree';

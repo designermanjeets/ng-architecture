@@ -14,7 +14,7 @@ import { DOCUMENT } from '@angular/common';
   selector: 'lib-mstabs-wrapper',
   templateUrl: './lib-mstabs.component.html',
   styles: [
-    ` .exampleh1 { margin-top: 0 }
+    ` :host { display: block; height: 100%; }
     `
   ]
 })
@@ -113,4 +113,8 @@ export class LibMSTabsComponent implements OnInit, OnDestroy {
     if (this.subs) { this.subs.unsubscribe(); }
   }
 
+  drop($event: any) {
+    console.log('Tab Drop');
+    console.log($event);
+  }
 }

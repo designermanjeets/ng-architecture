@@ -8,15 +8,21 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AngularSplitModule } from 'angular-split';
 import { LibMSTreeModule } from 'lib-mstree';
+import { LibMstabsModule  } from 'lib-mstabs';
+import { GraphsChartsComponent } from './components/graphs-charts/graphs-charts.component';
 
 
 @NgModule({
-  declarations: [OrdersComponent],
+  declarations: [
+    OrdersComponent,
+    GraphsChartsComponent
+  ],
   imports: [
     CommonModule,
     InstrumentsRoutingModule,
     AngularSplitModule.forRoot(),
     LibMSTreeModule,
+    LibMstabsModule,
     MatCardModule,
     DragDropModule
   ]

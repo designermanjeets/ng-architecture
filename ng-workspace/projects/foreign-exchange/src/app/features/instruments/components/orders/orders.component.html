@@ -2,17 +2,30 @@
   <mat-card-content style="width: 95%; height: 80vh;">
     <as-split direction="horizontal">
       <as-split-area [size]="40">
-          <!-- Tree Library -->
-          <lib-mstree></lib-mstree>
-          <!-- ./Tree Library -->
+        <ng-container
+          *ngIf="loadTree">
+            <!-- Tree Library -->
+            <lib-mstree
+              [connectWithDynamicComp] = [mstabs]
+              (treeDragStartEvent)="treeDragStartEvent($event)"
+              (treeDragEndEvent)="treeDragEndEvent($event)"
+            ></lib-mstree>
+            <!-- ./Tree Library -->
+        </ng-container>
       </as-split-area>
       <as-split-area [size]="60">
-          <div style="padding: 15px">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-            Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-            It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-            It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-          </div>
+          <!-- Tabs Library -->
+          <lib-mstabs-wrapper
+            cdkDropList
+            #mstabs="cdkDropList"
+            (cdkDropListDropped)="onTreeNodeDrop($event)"
+            [tabsComponents] = tabsComponents
+            [addMoreTabsSub] = addMoreTabsSub
+            [removeTabsSub] = removeTabsSub
+            (tabRemoveEvent) = "tabRemoveEvent($event)"
+            (tabChangedEvent) = "tabChangedEvent($event)"
+          ></lib-mstabs-wrapper>
+          <!-- ./Tabs Library -->
       </as-split-area>
     </as-split>
   </mat-card-content>
