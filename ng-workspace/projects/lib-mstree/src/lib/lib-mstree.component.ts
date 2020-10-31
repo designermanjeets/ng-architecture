@@ -3,12 +3,13 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { MstreeService } from './_services/mstree.service';
-
+import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
 /**
  * Node for to-do item
  */
 export class TreeItemNode {
+  id: string;
   children: TreeItemNode[];
   item: string;
   code: string;
@@ -16,6 +17,7 @@ export class TreeItemNode {
 
 /** Flat to-do item node with expandable and level information */
 export class TreeItemFlatNode {
+  id: string;
   item: string;
   level: number;
   expandable: boolean;
@@ -43,7 +45,36 @@ const TREE_DATA = [
   selector: 'lib-mstree',
   templateUrl: './mstree.component.html',
   styles: [
-    `.mat-tree { background: transparent }`
+    `
+      .mat-tree { background: transparent }
+
+      /**
+       * TREE DRAG AND DROP STYLING
+       */
+
+      .mat-tree-node {
+        background-color: rgb(66, 157, 253);
+        color: white;
+        user-select: none;
+        cursor: move;
+
+      &.cdk-drag-preview { // while dragging
+       @include mat-elevation(12);
+       }
+      &.cdk-drag-placeholder { // potential drop area
+       opacity: 0;
+       }
+      }
+
+      /* items moving away to make room for drop */
+      .cdk-drop-list-dragging .mat-tree-node:not(.cdk-drag-placeholder) {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+      }
+      /* item being dropped */
+      .cdk-drag-animating {
+        transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+      }
+    `
   ],
   providers: [MstreeService]
 })
@@ -67,16 +98,12 @@ export class LibMstreeComponent {
   dataSource: MatTreeFlatDataSource<TreeItemNode, TreeItemFlatNode>;
 
   /** The selection for checklist */
-  checklistSelection = new SelectionModel<TreeItemFlatNode>(false /* multiple */);
+  checklistSelection = new SelectionModel<TreeItemFlatNode>(true /* multiple */);
 
-
-  /* Drag and drop */
-  dragNode: any;
-  dragNodeExpandOverWaitTimeMs = 300;
-  dragNodeExpandOverNode: any;
-  dragNodeExpandOverTime: number;
-  dragNodeExpandOverArea: string;
-  @ViewChild('emptyItem') emptyItem: ElementRef;
+  expandedNodeSet = new Set<string>();
+  dragging = false;
+  expandTimeout: any;
+  expandDelay = 1000;
 
   constructor(private database: MstreeService) {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
@@ -111,6 +138,7 @@ export class LibMstreeComponent {
     flatNode.item = node.item;
     flatNode.level = level;
     flatNode.code = node.code;
+    flatNode.id = node.id;
     flatNode.expandable = node.children && node.children.length > 0;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
@@ -149,79 +177,179 @@ export class LibMstreeComponent {
     }
   }
 
-  // DragDrop
 
+  /**
+   * This constructs an array of nodes that matches the DOM,
+   * and calls rememberExpandedTreeNodes to persist expand state
+   */
+  visibleNodes(): TreeItemNode[] {
+    this.rememberExpandedTreeNodes(this.treeControl, this.expandedNodeSet);
+    const result = [];
 
-  /** Select the category so we can insert the new item. */
-  addNewItem(node: TreeItemFlatNode) {
-    const parentNode = this.flatNodeMap.get(node);
-    this.database.insertItem(parentNode, '');
-    this.treeControl.expand(node);
+    function addExpandedChildren(node: TreeItemNode, expanded: Set<string>) {
+      result.push(node);
+      if (expanded.has(node.id)) {
+        node.children.map(child => addExpandedChildren(child, expanded));
+      }
+    }
+    this.dataSource.data.forEach(node => {
+      addExpandedChildren(node, this.expandedNodeSet);
+    });
+    return result;
   }
 
-  /** Save the node to database */
-  saveNode(node: TreeItemFlatNode, itemValue: string) {
-    const nestedNode = this.flatNodeMap.get(node);
-    this.database.updateItem(nestedNode, itemValue);
+  /**
+   * Handle the drop - here we rearrange the data based on the drop event,
+   * then rebuild the tree.
+   * */
+  drop(event: CdkDragDrop<string[]>) {
+    // console.log('origin/destination', event.previousIndex, event.currentIndex);
+
+    // ignore drops outside of the tree
+    if (!event.isPointerOverContainer) { return; }
+
+    // construct a list of visible nodes, this will match the DOM.
+    // the cdkDragDrop event.currentIndex jives with visible nodes.
+    // it calls rememberExpandedTreeNodes to persist expand state
+    const visibleNodes = this.visibleNodes();
+
+    // deep clone the data source so we can mutate it
+    const changedData = JSON.parse(JSON.stringify(this.dataSource.data));
+
+    // recursive find function to find siblings of node
+    function findNodeSiblings(arr: Array<any>, id: string): Array<any> {
+      let result, subResult;
+      arr.forEach(item => {
+        if (item.id === id) {
+          result = arr;
+        } else if (item.children) {
+          subResult = findNodeSiblings(item.children, id);
+          if (subResult) { result = subResult; }
+        }
+      });
+      return result;
+    }
+
+    // remove the node from its old place
+    const node = event.item.data;
+    const siblings = findNodeSiblings(changedData, node.id);
+    const siblingIndex = siblings.findIndex(n => n.id === node.id);
+    const nodeToInsert: TreeItemFlatNode = siblings.splice(siblingIndex, 1)[0];
+
+    // determine where to insert the node
+    const nodeAtDest = visibleNodes[event.currentIndex];
+    if (nodeAtDest.id === nodeToInsert.id) { return; }
+
+    // determine drop index relative to destination array
+    let relativeIndex = event.currentIndex; // default if no parent
+    const nodeAtDestFlatNode = this.treeControl.dataNodes.find(n => nodeAtDest.id === n.id);
+    const parent = this.getParentNode(nodeAtDestFlatNode);
+    if (parent) {
+      const parentIndex = visibleNodes.findIndex(n => n.id === parent.id) + 1;
+      relativeIndex = event.currentIndex - parentIndex;
+    }
+    // insert node
+    const newSiblings = findNodeSiblings(changedData, nodeAtDest.id);
+    if (!newSiblings) { return; }
+    newSiblings.splice(relativeIndex, 0, nodeToInsert);
+
+    // rebuild tree with mutated data
+    this.rebuildTreeForData(changedData);
   }
 
-  handleDragStart(event, node) {
-    // Required by Firefox (https://stackoverflow.com/questions/19055264/why-doesnt-html5-drag-and-drop-work-in-firefox)
-    event.dataTransfer.setData('foo', 'bar');
-    event.dataTransfer.setDragImage(this.emptyItem.nativeElement, 0, 0);
-    this.dragNode = node;
-    this.treeControl.collapse(node);
+  /**
+   * Experimental - opening tree nodes as you drag over them
+   */
+  dragStart() {
+    this.dragging = true;
+  }
+  dragEnd() {
+    this.dragging = false;
+  }
+  dragHover(node: TreeItemFlatNode) {
+    if (this.dragging) {
+      clearTimeout(this.expandTimeout);
+      this.expandTimeout = setTimeout(() => {
+        this.treeControl.expand(node);
+      }, this.expandDelay);
+    }
+  }
+  dragHoverEnd() {
+    if (this.dragging) {
+      clearTimeout(this.expandTimeout);
+    }
   }
 
-  handleDragOver(event, node) {
-    event.preventDefault();
 
-    // Handle node expand
-    if (node === this.dragNodeExpandOverNode) {
-      if (this.dragNode !== node && !this.treeControl.isExpanded(node)) {
-        if ((new Date().getTime() - this.dragNodeExpandOverTime) > this.dragNodeExpandOverWaitTimeMs) {
-          this.treeControl.expand(node);
+  /**
+   * The following methods are for persisting the tree expand state
+   * after being rebuilt
+   */
+
+  rebuildTreeForData(data: any) {
+    this.rememberExpandedTreeNodes(this.treeControl, this.expandedNodeSet);
+    this.dataSource.data = data;
+    this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
+    this.expandNodesById(this.treeControl.dataNodes, Array.from(this.expandedNodeSet));
+  }
+
+  private rememberExpandedTreeNodes(
+    treeControl: FlatTreeControl<TreeItemFlatNode>,
+    expandedNodeSet: Set<string>
+  ) {
+    if (treeControl.dataNodes) {
+      treeControl.dataNodes.forEach((node) => {
+        if (treeControl.isExpandable(node) && treeControl.isExpanded(node)) {
+          // capture latest expanded state
+          expandedNodeSet.add(node.id);
+        }
+      });
+    }
+  }
+
+  private forgetMissingExpandedNodes(
+    treeControl: FlatTreeControl<TreeItemFlatNode>,
+    expandedNodeSet: Set<string>
+  ) {
+    if (treeControl.dataNodes) {
+      expandedNodeSet.forEach((nodeId) => {
+        // maintain expanded node state
+        if (!treeControl.dataNodes.find((n) => n.id === nodeId)) {
+          // if the tree doesn't have the previous node, remove it from the expanded list
+          expandedNodeSet.delete(nodeId);
+        }
+      });
+    }
+  }
+
+  private expandNodesById(flatNodes: TreeItemFlatNode[], ids: string[]) {
+    if (!flatNodes || flatNodes.length === 0) return;
+    const idSet = new Set(ids);
+    return flatNodes.forEach((node) => {
+      if (idSet.has(node.id)) {
+        this.treeControl.expand(node);
+        let parent = this.getParentNode(node);
+        while (parent) {
+          this.treeControl.expand(parent);
+          parent = this.getParentNode(parent);
         }
       }
-    } else {
-      this.dragNodeExpandOverNode = node;
-      this.dragNodeExpandOverTime = new Date().getTime();
-    }
-
-    // Handle drag area
-    const percentageX = event.offsetX / event.target.clientWidth;
-    const percentageY = event.offsetY / event.target.clientHeight;
-    if (percentageY < 0.25) {
-      this.dragNodeExpandOverArea = 'above';
-    } else if (percentageY > 0.75) {
-      this.dragNodeExpandOverArea = 'below';
-    } else {
-      this.dragNodeExpandOverArea = 'center';
-    }
+    });
   }
 
-  handleDrop(event, node) {
-    event.preventDefault();
-    if (node !== this.dragNode) {
-      let newItem: TreeItemNode;
-      if (this.dragNodeExpandOverArea === 'above') {
-        newItem = this.database.copyPasteItemAbove(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
-      } else if (this.dragNodeExpandOverArea === 'below') {
-        newItem = this.database.copyPasteItemBelow(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
-      } else {
-        newItem = this.database.copyPasteItem(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
+  private getParentNode(node: TreeItemFlatNode): TreeItemFlatNode | null {
+    const currentLevel = node.level;
+    if (currentLevel < 1) {
+      return null;
+    }
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+      if (currentNode.level < currentLevel) {
+        return currentNode;
       }
-      this.database.deleteItem(this.flatNodeMap.get(this.dragNode));
-      this.treeControl.expandDescendants(this.nestedNodeMap.get(newItem));
     }
-    this.dragNode = null;
-    this.dragNodeExpandOverNode = null;
-    this.dragNodeExpandOverTime = 0;
+    return null;
   }
 
-  handleDragEnd(event) {
-    this.dragNode = null;
-    this.dragNodeExpandOverNode = null;
-    this.dragNodeExpandOverTime = 0;
-  }
 }

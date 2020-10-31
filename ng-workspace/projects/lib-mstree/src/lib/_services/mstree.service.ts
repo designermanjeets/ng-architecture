@@ -6,6 +6,7 @@ import { BehaviorSubject } from 'rxjs';
  * Node for to-do item
  */
 export class TreeItemNode {
+  id: string;
   children: TreeItemNode[];
   item: string;
   code: string;
@@ -13,6 +14,7 @@ export class TreeItemNode {
 
 /** Flat to-do item node with expandable and level information */
 export class TreeItemFlatNode {
+  id: string;
   item: string;
   level: number;
   expandable: boolean;
@@ -60,19 +62,30 @@ export class MstreeService {
    * The return value is the list of `TodoItemNode`.
    */
 
-  buildFileTree(obj: any[], level: string): TreeItemNode[] {
+  buildFileTree(obj: any[], level: string, parentId: string = '0'): TreeItemNode[] {
     return obj.filter(o =>
       (o.code as string).startsWith(level + '.')
       && (o.code.match(/\./g) || []).length === (level.match(/\./g) || []).length + 1
     )
-      .map(o => {
+      .map((o, idx) => {
         const node = new TreeItemNode();
         node.item = o.text;
         node.code = o.code;
+
+        /**
+         * Make sure your node has an id so we can properly rearrange the tree during drag'n'drop.
+         * By passing parentId to buildFileTree, it constructs a path of indexes which make
+         * it possible find the exact sub-array that the node was grabbed from when dropped.
+         */
+        node.id = `${parentId}/${idx}`;
+
+        console.log(node.id)
+
         const children = obj.filter(so => (so.code as string).startsWith(level + '.'));
         if (children && children.length > 0) {
-          node.children = this.buildFileTree(children, o.code);
+          node.children = this.buildFileTree(children, o.code, node.id);
         }
+        console.log(node)
         return node;
       });
   }
@@ -80,7 +93,6 @@ export class MstreeService {
   public filter(filterText: string) {
     let filteredTreeData;
     if (filterText) {
-      console.log(this.treeData);
       filteredTreeData = this.treeData.filter(d => d.text.toLocaleLowerCase().indexOf(filterText.toLocaleLowerCase()) > -1);
       Object.assign([], filteredTreeData).forEach(ftd => {
         let str = (ftd.code as string);
@@ -106,120 +118,4 @@ export class MstreeService {
     this.dataChange.next(data);
   }
 
-
-  /** Add an item to to-do list */
-  insertItem(parent: TreeItemNode, name: string): TreeItemNode {
-    if (!parent.children) {
-      parent.children = [];
-    }
-    const newItem = { item: name } as TreeItemNode;
-    parent.children.push(newItem);
-    this.dataChange.next(this.data);
-    return newItem;
-  }
-
-  insertItemAbove(node: TreeItemNode, name: string): TreeItemNode {
-    const parentNode = this.getParentFromNodes(node);
-    const newItem = { item: name } as TreeItemNode;
-    if (parentNode != null) {
-      parentNode.children.splice(parentNode.children.indexOf(node), 0, newItem);
-    } else {
-      this.data.splice(this.data.indexOf(node), 0, newItem);
-    }
-    this.dataChange.next(this.data);
-    return newItem;
-  }
-
-  insertItemBelow(node: TreeItemNode, name: string): TreeItemNode {
-    const parentNode = this.getParentFromNodes(node);
-    const newItem = { item: name } as TreeItemNode;
-    if (parentNode != null) {
-      parentNode.children.splice(parentNode.children.indexOf(node) + 1, 0, newItem);
-    } else {
-      this.data.splice(this.data.indexOf(node) + 1, 0, newItem);
-    }
-    this.dataChange.next(this.data);
-    return newItem;
-  }
-
-  getParentFromNodes(node: TreeItemNode): TreeItemNode {
-    for (let i = 0; i < this.data.length; ++i) {
-      const currentRoot = this.data[i];
-      const parent = this.getParent(currentRoot, node);
-      if (parent != null) {
-        return parent;
-      }
-    }
-    return null;
-  }
-
-  getParent(currentRoot: TreeItemNode, node: TreeItemNode): TreeItemNode {
-    if (currentRoot.children && currentRoot.children.length > 0) {
-      for (let i = 0; i < currentRoot.children.length; ++i) {
-        const child = currentRoot.children[i];
-        if (child === node) {
-          return currentRoot;
-        } else if (child.children && child.children.length > 0) {
-          const parent = this.getParent(child, node);
-          if (parent != null) {
-            return parent;
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  updateItem(node: TreeItemNode, name: string) {
-    node.item = name;
-    this.dataChange.next(this.data);
-  }
-
-  deleteItem(node: TreeItemNode) {
-    this.deleteNode(this.data, node);
-    this.dataChange.next(this.data);
-  }
-
-  copyPasteItem(from: TreeItemNode, to: TreeItemNode): TreeItemNode {
-    const newItem = this.insertItem(to, from.item);
-    if (from.children) {
-      from.children.forEach(child => {
-        this.copyPasteItem(child, newItem);
-      });
-    }
-    return newItem;
-  }
-
-  copyPasteItemAbove(from: TreeItemNode, to: TreeItemNode): TreeItemNode {
-    const newItem = this.insertItemAbove(to, from.item);
-    if (from.children) {
-      from.children.forEach(child => {
-        this.copyPasteItem(child, newItem);
-      });
-    }
-    return newItem;
-  }
-
-  copyPasteItemBelow(from: TreeItemNode, to: TreeItemNode): TreeItemNode {
-    const newItem = this.insertItemBelow(to, from.item);
-    if (from.children) {
-      from.children.forEach(child => {
-        this.copyPasteItem(child, newItem);
-      });
-    }
-    return newItem;
-  }
-
-  deleteNode(nodes: TreeItemNode[], nodeToDelete: TreeItemNode) {
-    const index = nodes.indexOf(nodeToDelete, 0);
-    if (index > -1) {
-      nodes.splice(index, 1);
-    } else {
-      nodes.forEach(node => {
-        if (node.children && node.children.length > 0) {
-          this.deleteNode(node.children, nodeToDelete);
-        }
-      });
-    }
-  }
 }
