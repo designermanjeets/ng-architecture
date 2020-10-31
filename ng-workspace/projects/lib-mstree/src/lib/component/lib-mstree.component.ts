@@ -14,6 +14,7 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { MstreeService } from '../_services/mstree.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import * as _ from 'lodash';
 
 /**
  * Node for to-do item
@@ -22,7 +23,6 @@ export class TreeItemNode {
   id: string;
   children: TreeItemNode[];
   item: string;
-  code: string;
 }
 
 /** Flat to-do item node with expandable and level information */
@@ -31,25 +31,7 @@ export class TreeItemFlatNode {
   item: string;
   level: number;
   expandable: boolean;
-  code: string;
 }
-
-/**
- * The Json object for to-do list data.
- */
-const TREE_DATA = [
-  { text: 'Turkiye', code: '0.1' },
-  { text: 'İstanbul', code: '0.1.1' },
-  { text: 'Beykoz', code: '0.1.1.1' },
-  { text: 'Fatih', code: '0.1.1.1' },
-  { text: 'Ankara', code: '0.1.2' },
-  { text: 'Cankaya', code: '0.1.2.1' },
-  { text: 'Etimesgut', code: '0.1.2.1' },
-  { text: 'Elazig', code: '0.1.3' },
-  { text: 'Palu', code: '0.1.3.1' },
-  { text: 'Baskil', code: '0.1.3.2' },
-  { text: 'Sivrice', code: '0.1.3.3' }
-];
 
 @Component({
   selector: 'lib-mstree',
@@ -83,6 +65,7 @@ export class LibMstreeComponent implements OnChanges {
   dragging = false;
   expandTimeout: any;
   expandDelay = 1000;
+  flatTree: any;
 
   @Input() connectWithDynamicComp: any;
 
@@ -101,6 +84,7 @@ export class LibMstreeComponent implements OnChanges {
       this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    this.flatTree = [];
 
     database.dataChange.subscribe(data => {
       this.dataSource.data = [];
@@ -134,11 +118,11 @@ export class LibMstreeComponent implements OnChanges {
       : new TreeItemFlatNode();
     flatNode.item = node.item;
     flatNode.level = level;
-    flatNode.code = node.code;
     flatNode.id = node.id;
     flatNode.expandable = node.children && node.children.length > 0;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
+    this.flatTree.push(flatNode);
     return flatNode;
   }
 
@@ -165,7 +149,8 @@ export class LibMstreeComponent implements OnChanges {
   }
 
   filterChanged(filterText: string) {
-    this.database.filter(filterText);
+    const treeTemp = _.clone(this.flatTree);
+    this.database.filter(treeTemp, filterText);
     if (filterText)
     {
       this.treeControl.expandAll();
@@ -204,7 +189,7 @@ export class LibMstreeComponent implements OnChanges {
     // console.log('origin/destination', event.previousIndex, event.currentIndex);
 
     // ignore drops outside of the tree
-    // if (!event.isPointerOverContainer) { return; } // Allow Outside from here
+    if (!event.isPointerOverContainer) { return; } // Allow Outside from here
 
     // construct a list of visible nodes, this will match the DOM.
     // the cdkDragDrop event.currentIndex jives with visible nodes.

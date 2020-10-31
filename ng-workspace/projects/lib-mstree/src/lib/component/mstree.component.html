@@ -17,6 +17,7 @@
       <mat-checkbox class="checklist-leaf-node"
           [checked]="checklistSelection.isSelected(node)"
           (change)="checklistSelection.toggle(node);">{{node.item}}</mat-checkbox>
+      <div class="custom-placeholder" *cdkDragPlaceholder></div>
     </mat-tree-node>
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding cdkDrag [cdkDragData]="node"
          (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
