@@ -16,14 +16,15 @@
       <as-split-area [size]="60">
           <!-- Tabs Library -->
           <lib-mstabs-wrapper
-            cdkDropList
-            #mstabs="cdkDropList"
-            (cdkDropListDropped)="onTreeNodeDrop($event)"
-            [tabsComponents] = tabsComponents
-            [addMoreTabsSub] = addMoreTabsSub
-            [removeTabsSub] = removeTabsSub
-            (tabRemoveEvent) = "tabRemoveEvent($event)"
-            (tabChangedEvent) = "tabChangedEvent($event)"
+              cdkDropList
+              #tabsWrapper
+              #mstabs="cdkDropList"
+              (cdkDropListDropped)="onTreeNodeDrop($event)"
+              [tabsComponents] = tabsComponents
+              [addMoreTabsSub] = addMoreTabsSub
+              [removeTabsSub] = removeTabsSub
+              (tabRemoveEvent) = "tabRemoveEvent($event)"
+              (tabChangedEvent) = "tabChangedEvent($event)"
           ></lib-mstabs-wrapper>
           <!-- ./Tabs Library -->
       </as-split-area>

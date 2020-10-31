@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Tab } from 'lib-mstabs';
 import { BehaviorSubject } from 'rxjs';
-import {GraphsChartsComponent} from '../graphs-charts/graphs-charts.component';
+import { GraphsChartsComponent } from '../graphs-charts/graphs-charts.component';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-orders',
@@ -16,7 +17,8 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   done: any;
   loadTree = false;
 
-  @ViewChild('mstabs') mstabs: Component;
+  @ViewChild('mstabs') mstabs: any;
+  @ViewChild('tabsWrapper') tabsWrapper: Component;
 
   constructor(
     private cdRef: ChangeDetectorRef
@@ -62,7 +64,13 @@ export class OrdersComponent implements OnInit, AfterViewInit {
 
   onTreeNodeDrop($event) {
     console.log($event);
-    const tab = new Tab(GraphsChartsComponent, $event.item.data.item, { data: $event.item.data });
-    this.addMoreTabsSub.next(tab);
+    const tabExist = _.filter(this.tabsWrapper['tabsComponents'], comp =>
+      comp.tabData.data && comp.tabData.data.id === $event.item.data.id)[0];
+    if (!tabExist) {
+      const tab = new Tab(GraphsChartsComponent, $event.item.data.item, { data: $event.item.data });
+      this.addMoreTabsSub.next(tab);
+    } else {
+      console.error('Tab Already Exist with the Same Node!');
+    }
   }
 }

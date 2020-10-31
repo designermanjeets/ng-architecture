@@ -112,9 +112,4 @@ export class LibMSTabsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subs) { this.subs.unsubscribe(); }
   }
-
-  drop($event: any) {
-    console.log('Tab Drop');
-    console.log($event);
-  }
 }
