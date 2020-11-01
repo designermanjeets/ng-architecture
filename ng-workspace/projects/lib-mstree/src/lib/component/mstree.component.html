@@ -12,8 +12,14 @@
       [cdkDropListConnectedTo]="[connectWithDynamicComp]"
   >
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding [cdkDragLockAxis]=dragDirection cdkDrag [cdkDragData]="node"
-                   (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
-                   [cdkDragDisabled]="dragDisabled">
+                   (mouseenter)="dragHover(node)"
+                   (mouseleave)="dragHoverEnd(node)"
+                   (cdkDragStarted)="dragStart($event)"
+                   (cdkDragEntered)="dragEnter($event)"
+                   (cdkDragReleased)="dragEnd($event)"
+                   [cdkDragDisabled]="dragDisabled"
+                   msCdkDragPlaceholder
+    >
       <button mat-icon-button disabled></button>
       <mat-checkbox class="checklist-leaf-node"
           [checked]="checklistSelection.isSelected(node)"
@@ -21,7 +27,7 @@
       <div class="custom-placeholder" *cdkDragPlaceholder></div>
     </mat-tree-node>
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" [cdkDragLockAxis]=dragDirection matTreeNodePadding cdkDrag [cdkDragData]="node"
-         (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
+         (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd(node)" (cdkDragStarted)="dragStart($event)" (cdkDragReleased)="dragEnd($event)"
          [cdkDragDisabled]="dragDisabled">
       <button mat-icon-button matTreeNodeToggle
             [attr.aria-label]="'toggle ' + node.filename">

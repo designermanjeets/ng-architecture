@@ -20,13 +20,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d327f496-4343-4b30-9124-783d578fd6a0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/_models/treemodel.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/_directives/ms-cdk-drag-placeholder.directive.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ng-workspace/projects/foreign-exchange/src/app/features/instruments/components/orders/orders.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/foreign-exchange/src/app/features/instruments/components/orders/orders.component.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ng-workspace/projects/foreign-exchange/src/app/features/instruments/components/orders/orders.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/foreign-exchange/src/app/features/instruments/components/orders/orders.component.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/_services/mstree.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/_services/mstree.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/lib-mstree.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/lib-mstree.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/mstree.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/mstree.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/mstree.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/component/mstree.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/lib-mstree.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/lib/lib-mstree.module.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/public-api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/ng-workspace/projects/lib-mstree/src/public-api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -81,7 +80,7 @@
       <option name="presentableId" value="Default" />
       <updated>1604067873970</updated>
       <workItem from="1604067875086" duration="6705000" />
-      <workItem from="1604082318707" duration="39332000" />
+      <workItem from="1604082318707" duration="42073000" />
     </task>
     <servers />
   </component>

@@ -9,11 +9,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { A11yModule } from '@angular/cdk/a11y';
+import { MSCdkDragPlaceholderDirective } from './_directives/ms-cdk-drag-placeholder.directive';
 
 
 
 @NgModule({
-  declarations: [LibMstreeComponent],
+  declarations: [
+    LibMstreeComponent,
+    MSCdkDragPlaceholderDirective
+  ],
   imports: [
     CommonModule,
     MatCheckboxModule,

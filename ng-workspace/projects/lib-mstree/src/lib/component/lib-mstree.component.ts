@@ -10,7 +10,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { MstreeService } from '../_services/mstree.service';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragEnd, CdkDragEnter, CdkDragRelease, CdkDragStart} from '@angular/cdk/drag-drop';
 import * as _ from 'lodash';
 import { TreeItemFlatNode, TreeItemNode } from '../_models/treemodel';
 
@@ -240,14 +240,20 @@ export class LibMstreeComponent implements OnChanges {
   /**
    * Experimental - opening tree nodes as you drag over them
    */
-  dragStart() {
+  dragStart(event: CdkDragStart) {
     this.dragging = true;
     this.treeDragStartEvent.emit({dragging: true});
   }
-  dragEnd() {
+
+  dragEnter(event: CdkDragEnter) {
+    // CdkDragEnter
+  }
+
+  dragEnd(event: CdkDragRelease) {
     this.dragging = false;
     this.treeDragEndEvent.emit({dragging: false});
   }
+
   dragHover(node: TreeItemFlatNode) {
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
@@ -257,7 +263,8 @@ export class LibMstreeComponent implements OnChanges {
       }, this.expandDelay);
     }
   }
-  dragHoverEnd() {
+
+  dragHoverEnd(node: TreeItemFlatNode) {
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
       this.treeDragHoverEndEvent.emit({event: 'dragHover', value: false});
