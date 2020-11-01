@@ -1,20 +1,24 @@
 import { TabContentComponent } from './tab-content.component';
-import {  Component, OnInit, Input, Output, EventEmitter, Injector,
-          ViewContainerRef, ContentChildren, QueryList, Inject,
-          ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef, OnDestroy
+import {
+  Component, OnInit, Input, Output, EventEmitter, Injector,
+  ViewContainerRef, ContentChildren, QueryList, Inject,
+  ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef, OnDestroy
 } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import {BehaviorSubject, fromEvent, Subscription} from 'rxjs';
 import { ComponentPortal, DomPortalHost } from '@angular/cdk/portal';
 import { LibMSTabsService } from './_services/lib-mstabs.service';
 import { Tab } from './_models/tabs.models';
 import { tabInjector } from './_services/tabs.injector';
 import { DOCUMENT } from '@angular/common';
+import { MatMenuItem } from '@angular/material/menu';
 
 @Component({
   selector: 'lib-mstabs-wrapper',
   templateUrl: './lib-mstabs.component.html',
   styles: [
-    ` :host { display: block; height: 100%; }
+    `    :host { display: block; height: 100%; }
+        .removeTabIcon { margin: 0px -10px 0 5px }
+        .vertmenu { margin-top: -2px; }
     `
   ]
 })
@@ -30,6 +34,10 @@ export class LibMSTabsComponent implements OnInit, OnDestroy {
   @Input() removeTabsSub: BehaviorSubject<number>;
   @Output() tabRemoveEvent = new EventEmitter<any>();
   @Output() tabChangedEvent = new EventEmitter<any>();
+
+  @Input() tabMoreMenu;
+  @Output() tabMoreMenuEvent = new EventEmitter<any>();
+
   viewContainerRef: ViewContainerRef;
 
   @ContentChildren(TabContentComponent) TabContentComponent: QueryList<Tab>;
@@ -43,7 +51,7 @@ export class LibMSTabsComponent implements OnInit, OnDestroy {
     private cdref: ChangeDetectorRef,
     @Inject(DOCUMENT) private document: Document,
   ) {
-      this.viewContainerRef = this.privateviewContainerRef;
+      this.viewContainerRef = this.privateviewContainerRef; // Was something else
     }
 
   ngOnInit() {
@@ -112,4 +120,9 @@ export class LibMSTabsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.subs) { this.subs.unsubscribe(); }
   }
+
+  clickMenuItem(tab: Tab, menuItem: MatMenuItem, action: string) {
+    this.tabMoreMenuEvent.emit({tab, menuItem, action});
+  }
+
 }

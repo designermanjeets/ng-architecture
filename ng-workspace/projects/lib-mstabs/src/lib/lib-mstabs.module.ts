@@ -9,6 +9,9 @@ import { TabContentComponent } from './tab-content.component';
 import { TestComponent } from './comps/test.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { A11yModule } from '@angular/cdk/a11y';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +26,9 @@ import { A11yModule } from '@angular/cdk/a11y';
     MatButtonModule,
     PortalModule,
     DragDropModule,
-    A11yModule
+    A11yModule,
+    MatIconModule,
+    MatMenuModule
   ],
   exports: [
     LibMSTabsComponent,

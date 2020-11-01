@@ -14,7 +14,7 @@
         </ng-container>
       </as-split-area>
       <as-split-area [size]="60">
-          <!-- Tabs Library -->
+        <!-- Tabs Library -->
           <lib-mstabs-wrapper
               cdkDropList
               #tabsWrapper
@@ -23,8 +23,10 @@
               [tabsComponents] = tabsComponents
               [addMoreTabsSub] = addMoreTabsSub
               [removeTabsSub] = removeTabsSub
+              [tabMoreMenu] = tabMoreMenu
               (tabRemoveEvent) = "tabRemoveEvent($event)"
               (tabChangedEvent) = "tabChangedEvent($event)"
+              (tabMoreMenuEvent) = "tabMoreMenuEvent($event)"
           ></lib-mstabs-wrapper>
           <!-- ./Tabs Library -->
       </as-split-area>

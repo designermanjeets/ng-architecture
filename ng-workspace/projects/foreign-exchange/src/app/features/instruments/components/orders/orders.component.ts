@@ -20,6 +20,12 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   @ViewChild('mstabs') mstabs: any;
   @ViewChild('tabsWrapper') tabsWrapper: Component;
 
+  tabMoreMenu = [
+    { matIcon: 'create', label: 'Edit Label', action: 'edit_label' },
+    { matIcon: 'save', label: 'Save View', action: 'save_view' },
+    { matIcon: 'add_circle', label: 'Add to Series', action: 'add_to_series' },
+  ];
+
   constructor(
     private cdRef: ChangeDetectorRef
   ) { }
@@ -73,4 +79,17 @@ export class OrdersComponent implements OnInit, AfterViewInit {
       console.error('Tab Already Exist with the Same Node!');
     }
   }
+
+  tabMoreMenuEvent($event: any) {
+
+    const tabExist = _.filter(this.tabsWrapper['tabsComponents'], comp =>
+      comp.id === $event.tab.id)[0];
+    if (tabExist) {
+      console.log(tabExist);
+      // tabExist.title = 'My New Title'; // Update Title here based upon condition
+    } else {
+      console.error('No Tab Found!');
+    }
+  }
+
 }

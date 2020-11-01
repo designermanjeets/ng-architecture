@@ -3,15 +3,26 @@
     <mat-tab-group #tabGroup animationDuration="0" class="main-tab-group mt-2" [selectedIndex]="selectedTab" (selectedTabChange)="tabChanged($event)">
       <mat-tab *ngFor="let tab of tabsComponents; let tabIndex = index">
         <ng-template mat-tab-label>{{ tab.title }}
-          <i class="material-icons" (click)="removeTab(tabIndex)">
-            close
-          </i>
+          <i class="material-icons removeTabIcon" (click)="removeTab(tabIndex)">cancel</i>
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="menu" class="vertmenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
         </ng-template>
 
         <div id="mstab-{{tab.id}}">
           <!-- Below Code will inject in provided Directive with component factory -->
           <!-- <lib-tab-content [tab]="tab"></lib-tab-content> -->
         </div>
+
+        <mat-menu #menu="matMenu">
+          <ng-container *ngFor="let item of tabMoreMenu">
+            <button #menuItem mat-menu-item (click)="clickMenuItem(tab, menuItem, item.action)">
+              <mat-icon>{{item.matIcon}}</mat-icon>
+              <span>{{item.label}}</span>
+            </button>
+          </ng-container>
+        </mat-menu>
+
       </mat-tab>
     </mat-tab-group>
   </div>
