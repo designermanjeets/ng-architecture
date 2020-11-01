@@ -1,13 +1,10 @@
 import {
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   Output,
-  SimpleChange,
   SimpleChanges,
-  ViewChild
 } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
@@ -15,23 +12,8 @@ import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 import { MstreeService } from '../_services/mstree.service';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import * as _ from 'lodash';
+import { TreeItemFlatNode, TreeItemNode } from '../_models/treemodel';
 
-/**
- * Node for to-do item
- */
-export class TreeItemNode {
-  id: string;
-  children: TreeItemNode[];
-  item: string;
-}
-
-/** Flat to-do item node with expandable and level information */
-export class TreeItemFlatNode {
-  id: string;
-  item: string;
-  level: number;
-  expandable: boolean;
-}
 
 @Component({
   selector: 'lib-mstree',
@@ -68,6 +50,9 @@ export class LibMstreeComponent implements OnChanges {
   flatTree: any;
 
   @Input() connectWithDynamicComp: any;
+  @Input() treeData: any;
+  @Input() dragDisabled: boolean;
+  @Input() dragDirection: any;
 
   @Output() treeDropEvent = new EventEmitter<any>();
   @Output() treeFilterChangeEvent = new EventEmitter<any>();
@@ -79,23 +64,29 @@ export class LibMstreeComponent implements OnChanges {
 
   constructor(
     private database: MstreeService
-  ) {
+  ) { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.connectWithDynamicComp) {
+      this.connectWithDynamicComp = changes.connectWithDynamicComp.currentValue[0];
+    }
+    if (changes.treeData) {
+      this.database.initialize(changes.treeData.currentValue[0]);
+      this.initTree();
+    }
+  }
+
+  initTree() {
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel,
       this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
     this.flatTree = [];
 
-    database.dataChange.subscribe(data => {
+    this.database.dataChange.subscribe(data => {
       this.dataSource.data = [];
       this.dataSource.data = data;
     });
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.connectWithDynamicComp) {
-      this.connectWithDynamicComp = changes.connectWithDynamicComp.currentValue[0];
-    }
   }
 
   getLevel = (node: TreeItemFlatNode) => node.level;

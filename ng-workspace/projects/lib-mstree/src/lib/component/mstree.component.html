@@ -11,16 +11,18 @@
       cdkDropList
       [cdkDropListConnectedTo]="[connectWithDynamicComp]"
   >
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding cdkDragLockAxis="x" cdkDrag [cdkDragData]="node"
-                   (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding [cdkDragLockAxis]=dragDirection cdkDrag [cdkDragData]="node"
+                   (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
+                   [cdkDragDisabled]="dragDisabled">
       <button mat-icon-button disabled></button>
       <mat-checkbox class="checklist-leaf-node"
           [checked]="checklistSelection.isSelected(node)"
           (change)="checklistSelection.toggle(node);">{{node.item}}</mat-checkbox>
       <div class="custom-placeholder" *cdkDragPlaceholder></div>
     </mat-tree-node>
-    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" cdkDragLockAxis="x" matTreeNodePadding cdkDrag [cdkDragData]="node"
-         (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" [cdkDragLockAxis]=dragDirection matTreeNodePadding cdkDrag [cdkDragData]="node"
+         (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
+         [cdkDragDisabled]="dragDisabled">
       <button mat-icon-button matTreeNodeToggle
             [attr.aria-label]="'toggle ' + node.filename">
         <mat-icon class="mat-icon-rtl-mirror">
@@ -31,6 +33,7 @@
         [checked]="descendantsAllSelected(node)"
         [indeterminate]="descendantsPartiallySelected(node)"
         (change)="todoItemSelectionToggle(node)">{{node.item}}</mat-checkbox>
+      <div class="custom-placeholder" *cdkDragPlaceholder></div>
     </mat-tree-node>
   </mat-tree>
 </ng-container>

@@ -26,6 +26,43 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     { matIcon: 'add_circle', label: 'Add to Series', action: 'add_to_series' },
   ];
 
+  // Should Be Dynamic || From Service
+  TREE_DATA = [{
+    Applications: {
+      Calendar: 'app',
+      Chrome: 'app',
+      Webstorm: 'app'
+    },
+    Documents: {
+      angular: {
+        src: {
+          compiler: 'ts',
+          core: 'ts'
+        }
+      },
+      material2: {
+        src: {
+          button: 'ts',
+          checkbox: 'ts',
+          input: 'ts'
+        }
+      }
+    },
+    Downloads: {
+      October: 'pdf',
+      November: 'pdf',
+      Tutorial: 'html'
+    },
+    Pictures: {
+      'Photo Booth Library': {
+        Contents: 'dir',
+        Pictures: 'dir'
+      },
+      Sun: 'png',
+      Woods: 'jpg'
+    }
+  }];
+
   constructor(
     private cdRef: ChangeDetectorRef
   ) { }

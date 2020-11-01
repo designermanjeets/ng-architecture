@@ -6,6 +6,9 @@
           *ngIf="loadTree">
             <!-- Tree Library -->
             <lib-mstree
+              *ngIf="TREE_DATA && TREE_DATA.length"
+              [treeData] = TREE_DATA
+              [dragDisabled] = false
               [connectWithDynamicComp] = [mstabs]
               (treeDragStartEvent)="treeDragStartEvent($event)"
               (treeDragEndEvent)="treeDragEndEvent($event)"

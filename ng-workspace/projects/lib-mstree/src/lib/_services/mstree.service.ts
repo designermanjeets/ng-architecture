@@ -1,62 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
-
-/**
- * Node for to-do item
- */
-export class TreeItemNode {
-  id: string;
-  children: TreeItemNode[];
-  item: string;
-}
-
-/** Flat to-do item node with expandable and level information */
-export class TreeItemFlatNode {
-  id: string;
-  item: string;
-  level: number;
-  expandable: boolean;
-}
-
-/**
- * The Json object for to-do list data.
- */
-const TREE_DATA = [{
-  Applications: {
-    Calendar: 'app',
-    Chrome: 'app',
-    Webstorm: 'app'
-  },
-  Documents: {
-    angular: {
-      src: {
-        compiler: 'ts',
-        core: 'ts'
-      }
-    },
-    material2: {
-      src: {
-        button: 'ts',
-        checkbox: 'ts',
-        input: 'ts'
-      }
-    }
-  },
-  Downloads: {
-    October: 'pdf',
-    November: 'pdf',
-    Tutorial: 'html'
-  },
-  Pictures: {
-    'Photo Booth Library': {
-      Contents: 'dir',
-      Pictures: 'dir'
-    },
-    Sun: 'png',
-    Woods: 'jpg'
-  }
-}];
+import { TreeItemNode, TREE_DATA } from '../_models/treemodel';
 
 @Injectable()
 export class MstreeService {
@@ -65,15 +10,15 @@ export class MstreeService {
   get data(): TreeItemNode[] { return this.dataChange.value; }
 
   constructor() {
-    this.initialize();
+    // this.initialize(treeData); INITIALIZE FROM OUTSIDE || COMPONENT
   }
 
-  initialize() {
+  initialize(treeData) {
     // this.treeData =  TREE_DATA;
 
     // Build the tree nodes from Json object. The result is a list of `TodoItemNode` with nested
     //     file node as children.
-    const data = this.buildFileTree(TREE_DATA[0], '0');
+    const data = this.buildFileTree(treeData, '0');
     // Notify the change.
     this.dataChange.next(data);
   }
