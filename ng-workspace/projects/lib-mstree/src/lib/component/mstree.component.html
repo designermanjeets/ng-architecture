@@ -8,6 +8,7 @@
   <mat-tree
       [dataSource]="dataSource"
       [treeControl]="treeControl"
+      cdkDropListSortingDisabled
       cdkDropList
       [cdkDropListConnectedTo]="[connectWithDynamicComp]"
   >
@@ -25,6 +26,7 @@
        (cdkDragReleased)="dragEnd($event)"
        [cdkDragDisabled]="dragDisabled"
        msCdkDragPlaceholder
+       [cdkDragBoundary]="dragBoundry"
     >
       <button mat-icon-button disabled></button>
       <mat-checkbox class="checklist-leaf-node"
@@ -45,6 +47,7 @@
       (cdkDragReleased)="dragEnd($event)"
       [cdkDragDisabled]="dragDisabled"
       msCdkDragPlaceholder
+      [cdkDragBoundary]="dragBoundry"
     >
       <button mat-icon-button matTreeNodeToggle
             [attr.aria-label]="'toggle ' + node.filename">

@@ -1,13 +1,14 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { Tab } from 'lib-mstabs';
-import { BehaviorSubject } from 'rxjs';
-import { GraphsChartsComponent } from '../graphs-charts/graphs-charts.component';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import {Tab} from 'lib-mstabs';
+import {BehaviorSubject} from 'rxjs';
+import {GraphsChartsComponent} from '../graphs-charts/graphs-charts.component';
 import * as _ from 'lodash';
 
 @Component({
   selector: 'app-orders',
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class OrdersComponent implements OnInit, AfterViewInit {
   selectedIndex: number;
@@ -68,22 +69,20 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   ) { }
 
   ngOnInit(): void {
+    _.forEach([1, 2, 3, 4], tab => this.addTabs());
   }
 
 
   ngAfterViewInit(): void {
-    this.addTabs(Number(1)); // Set Any Default Value/Component' Value if No Tabs
     this.loadTree = true;
     this.cdRef.detectChanges();
   }
 
 
-  addTabs(num) {
-    let tab = null;
-    if (num === 1) {
-      tab = new Tab(GraphsChartsComponent, 'Default Tab', { data: null });
-    }
+  addTabs() {
+    const tab = new Tab(GraphsChartsComponent, 'Default Right Tab', { data: null });
     this.addMoreTabsSub.next(tab);
+    this.cdRef.detectChanges();
   }
 
   removeSelTabs() { // Removed from Outside

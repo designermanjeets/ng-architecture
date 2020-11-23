@@ -53,6 +53,7 @@ export class LibMstreeComponent implements OnChanges {
   @Input() treeData: any;
   @Input() dragDisabled: boolean;
   @Input() dragDirection: any;
+  @Input() dragBoundry: any;
 
   @Output() treeDropEvent = new EventEmitter<any>();
   @Output() treeFilterChangeEvent = new EventEmitter<any>();
@@ -68,6 +69,7 @@ export class LibMstreeComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.connectWithDynamicComp) {
+      console.log(changes.connectWithDynamicComp);
       this.connectWithDynamicComp = changes.connectWithDynamicComp.currentValue[0];
     }
     if (changes.treeData) {

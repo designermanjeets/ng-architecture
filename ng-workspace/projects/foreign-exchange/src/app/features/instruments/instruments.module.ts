@@ -10,12 +10,14 @@ import { AngularSplitModule } from 'angular-split';
 import { LibMSTreeModule } from 'lib-mstree';
 import { LibMstabsModule  } from 'lib-mstabs';
 import { GraphsChartsComponent } from './components/graphs-charts/graphs-charts.component';
+import {LeftpanelComponent} from "./components/leftpanel/leftpanel.component";
 
 
 @NgModule({
   declarations: [
     OrdersComponent,
-    GraphsChartsComponent
+    GraphsChartsComponent,
+    LeftpanelComponent
   ],
   imports: [
     CommonModule,

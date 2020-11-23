@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { Tab } from './../_models/tabs.models';
+import {delay} from "rxjs/operators";
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 
 export class LibMSTabsService {
   tabs: Tab[];
@@ -26,16 +25,16 @@ export class LibMSTabsService {
   public setTabs = (tabs) => this.tabs = tabs;
 
   public addTab(tab: Tab) {
-    this.tabs.forEach((ele, i) => {
-      if (this.tabs[i].active) {
-        this.tabs[i].active = false;
-      }
-    });
-    tab.id = uuidv4();
-    tab.active = true;
-    this.tabs.push(tab);
-    this.tabSub.next(this.tabs);
-    this.getTabID = tab.id;
+      this.tabs.forEach((ele, i) => {
+        if (this.tabs[i].active) {
+          this.tabs[i].active = false;
+        }
+      });
+      tab.id = uuidv4();
+      tab.active = true;
+      this.tabs.push(tab);
+      this.tabSub.next(this.tabs);
+      this.getTabID = tab.id;
   }
 
   getRow(tabs, index) {

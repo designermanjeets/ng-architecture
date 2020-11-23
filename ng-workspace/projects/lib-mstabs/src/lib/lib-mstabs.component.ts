@@ -1,16 +1,27 @@
-import { TabContentComponent } from './tab-content.component';
+import {TabContentComponent} from './tab-content.component';
 import {
-  Component, OnInit, Input, Output, EventEmitter, Injector,
-  ViewContainerRef, ContentChildren, QueryList, Inject,
-  ComponentFactoryResolver, ApplicationRef, ChangeDetectorRef, OnDestroy
+  ApplicationRef,
+  ChangeDetectorRef,
+  Component,
+  ComponentFactoryResolver,
+  ContentChildren,
+  EventEmitter,
+  Inject,
+  Injector,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  QueryList,
+  ViewContainerRef
 } from '@angular/core';
-import {BehaviorSubject, fromEvent, Subscription} from 'rxjs';
-import { ComponentPortal, DomPortalHost } from '@angular/cdk/portal';
-import { LibMSTabsService } from './_services/lib-mstabs.service';
-import { Tab } from './_models/tabs.models';
-import { tabInjector } from './_services/tabs.injector';
-import { DOCUMENT } from '@angular/common';
-import { MatMenuItem } from '@angular/material/menu';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {ComponentPortal, DomPortalHost} from '@angular/cdk/portal';
+import {LibMSTabsService} from './_services/lib-mstabs.service';
+import {Tab} from './_models/tabs.models';
+import {tabInjector} from './_services/tabs.injector';
+import {DOCUMENT} from '@angular/common';
+import {MatMenuItem} from '@angular/material/menu';
 
 @Component({
   selector: 'lib-mstabs-wrapper',
@@ -20,7 +31,8 @@ import { MatMenuItem } from '@angular/material/menu';
         .removeTabIcon { margin: 0px -10px 0 5px }
         .vertmenu { margin-top: -2px; }
     `
-  ]
+  ],
+  providers: [ LibMSTabsService ]
 })
 
 export class LibMSTabsComponent implements OnInit, OnDestroy {

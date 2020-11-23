@@ -1,19 +1,23 @@
 <mat-card class="mat-elevation-z2">
   <mat-card-content style="width: 95%; height: 80vh;">
-    <as-split direction="horizontal">
+    <as-split direction="horizontal" class="drag-boundary">
       <as-split-area [size]="40">
         <ng-container
           *ngIf="loadTree">
-            <!-- Tree Library -->
-            <lib-mstree
-              *ngIf="TREE_DATA && TREE_DATA.length"
-              [treeData] = TREE_DATA
-              [dragDisabled] = false
-              [connectWithDynamicComp] = [mstabs]
-              (treeDragStartEvent)="treeDragStartEvent($event)"
-              (treeDragEndEvent)="treeDragEndEvent($event)"
-            ></lib-mstree>
-            <!-- ./Tree Library -->
+<!--          <app-leftpanel [connectWithDynamicComp] = [mstabs]>-->
+<!--          </app-leftpanel>-->
+
+          <!-- Tree Library -->
+          <lib-mstree
+            *ngIf="TREE_DATA && TREE_DATA.length"
+            [treeData] = TREE_DATA
+            [dragDisabled] = false
+            [connectWithDynamicComp] = [mstabs]
+            (treeDragStartEvent)="treeDragStartEvent($event)"
+            (treeDragEndEvent)="treeDragEndEvent($event)"
+            [dragBoundry]="'.drag-boundary'"
+          ></lib-mstree>
+          <!-- ./Tree Library -->
         </ng-container>
       </as-split-area>
       <as-split-area [size]="60">

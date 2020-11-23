@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
     if (!this.currentUser) {
-        this.router.navigate(['/login'] );
+        // this.router.navigate(['/login'] );
     }
 
     this.authenticationService.currentUser.subscribe(user => this.currentUser = user);
